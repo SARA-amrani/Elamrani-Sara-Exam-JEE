@@ -13,4 +13,13 @@ public interface CreditBankService {
 
     ClientDTO save(ClientDTO clientDTO);
 
+    List<ClientDTO> listClients();
+
+    ClientDTO getClientById(Long id);
+
+    ClientDTO saveClient(ClientDTO clientDTO);
+
+    ClientDTO updateClient(ClientDTO clientDTO);
+
+    void deleteClient(Long id);
 }

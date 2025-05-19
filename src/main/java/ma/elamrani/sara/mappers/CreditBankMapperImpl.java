@@ -6,6 +6,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Component
 public class CreditBankMapperImpl {
@@ -21,11 +24,46 @@ public class CreditBankMapperImpl {
         BeanUtils.copyProperties(clientDTO, client);
         return client;
     }
+    public List<ClientDTO> fromClientList(List<Client> clients) {
+        return clients.stream()
+                .map(this::fromClient)
+                .collect(Collectors.toList());
+    }
 
     public CreditDTO fromCredit(Credit credit) {
-        CreditDTO creditDTO = new CreditDTO();
-        BeanUtils.copyProperties(credit, creditDTO);
-        return creditDTO;
+        if (credit instanceof CreditImmobilier) {
+            CreditImmobilierDTO dto = new CreditImmobilierDTO();
+            BeanUtils.copyProperties(credit, dto);
+            return dto;
+        } else if (credit instanceof CreditPersonnel) {
+            CreditPersonnelDTO dto = new CreditPersonnelDTO();
+            BeanUtils.copyProperties(credit, dto);
+            return dto;
+        } else if (credit instanceof CreditProfessionnel) {
+            CreditProfessionnelDTO dto = new CreditProfessionnelDTO();
+            BeanUtils.copyProperties(credit, dto);
+            return dto;
+        } else {
+            throw new IllegalArgumentException("Type de crédit inconnu : " + credit.getClass().getSimpleName());
+        }
+    }
+
+    public Credit fromCreditDTO(CreditDTO creditDTO) {
+        if (creditDTO instanceof CreditImmobilierDTO) {
+            CreditImmobilier credit = new CreditImmobilier();
+            BeanUtils.copyProperties(creditDTO, credit);
+            return credit;
+        } else if (creditDTO instanceof CreditPersonnelDTO) {
+            CreditPersonnel credit = new CreditPersonnel();
+            BeanUtils.copyProperties(creditDTO, credit);
+            return credit;
+        } else if (creditDTO instanceof CreditProfessionnelDTO) {
+            CreditProfessionnel credit = new CreditProfessionnel();
+            BeanUtils.copyProperties(creditDTO, credit);
+            return credit;
+        } else {
+            throw new IllegalArgumentException("Type de DTO inconnu : " + creditDTO.getClass().getSimpleName());
+        }
     }
 
     public CreditImmobilierDTO fromCreditImmobilier(CreditImmobilier credit) {
@@ -75,5 +113,4 @@ public class CreditBankMapperImpl {
         BeanUtils.copyProperties(dto, remboursement);
         return remboursement;
     }
-
 }
